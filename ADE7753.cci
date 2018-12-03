@@ -1,0 +1,9 @@
+VERSION:3 SOURCE_TIMESTAMP:4D7CAE88
+NODE:I LEVEL:0 LINE:1 "D:\My Data\TanPhat\AC-power-supply-adj\ADE7753.h"
+NODE:I LEVEL:0 LINE:2 "C:\cvavr\inc\delay.h"
+NODE:I LEVEL:0 LINE:3 "D:\My Data\TanPhat\AC-power-supply-adj\scan_led.h"
+NODE:F LEVEL:0 LINE:6 "SPI_7753_SEND(unsigned char data)"
+NODE:F LEVEL:0 LINE:24 "SPI_7753_RECEIVE(void)"
+NODE:F LEVEL:0 LINE:44 "ADE7753_WRITE(unsigned char IC_CS,unsigned char addr,unsigned char num_data,unsigned char data_1,unsigned char data_2,unsigned char data_3)"
+NODE:F LEVEL:0 LINE:87 "ADE7753_READ(unsigned char IC_CS,unsigned char addr,unsigned char num_data)"
+NODE:F LEVEL:0 LINE:135 "ADE7753_INIT(void)"

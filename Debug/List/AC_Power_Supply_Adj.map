@@ -1,0 +1,35 @@
+RAM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+Uint_data_led1                                                                    0x0200       2
+Uint_data_led2                                                                    0x0202       2
+Ul_Voltage_Buff                                                                   0x0204      80
+Ul_Current_Buff                                                                   0x0254      80
+BCDLED                                                                            0x02A4      11
+
+EEPROM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+
+Register Allocation
+Variable                                                                          Register  Size
+------------------------------------------------------------------------------------------------
+Uint_Voltage                                                                      R5,R6        2
+Uint_Current                                                                      R7,R8        2
+Uc_Buff_Count                                                                     R10          1
+Uc_Select_led                                                                     R9           1
+
+FLASH Allocation [words]
+Function                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+read_adc                                                                          0x00056     27
+timer1_ovf_isr                                                                    0x00071     34
+CONTROL_VOLTAGE                                                                   0x00093     38
+READ_CURRENT_INFO                                                                 0x000B9    348
+main                                                                              0x00215     94
+SPI_7753_SEND                                                                     0x00273     26
+SPI_7753_RECEIVE                                                                  0x0028D     22
+ADE7753_READ                                                                      0x002A3    125
+SEND_DATA_LED                                                                     0x00320     56
+SCAN_LED                                                                          0x00358    172
+SPI_SENDBYTE                                                                      0x00404     27

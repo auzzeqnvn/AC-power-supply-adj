@@ -1,0 +1,836 @@
+;/*******************************************************
+;This program was created by the
+;CodeWizardAVR V3.12 Advanced
+;Automatic Program Generator
+;� Copyright 1998-2014 Pavel Haiduc, HP InfoTech s.r.l.
+;http://www.hpinfotech.com
+;
+;Project : AC_Power_Supply_Adj
+;Version : 1.0
+;Date    : 12/1/2018
+;Author  :
+;Company :
+;Comments:
+;Dieu che dien ap xoay chieu 35VAC
+;
+;
+;Chip type               : ATmega88P
+;Program type            : Application
+;AVR Core Clock frequency: 11.059200 MHz
+;Memory model            : Small
+;External RAM size       : 0
+;Data Stack size         : 256
+;*******************************************************/
+;
+;#include <mega88p.h>
+;PCODE: $00000000 VOL: 0
+	#ifndef __SLEEP_DEFINED__
+;PCODE: $00000001 VOL: 0
+	#define __SLEEP_DEFINED__
+;PCODE: $00000002 VOL: 0
+	.EQU __se_bit=0x01
+;PCODE: $00000003 VOL: 0
+	.EQU __sm_mask=0x0E
+;PCODE: $00000004 VOL: 0
+	.EQU __sm_adc_noise_red=0x02
+;PCODE: $00000005 VOL: 0
+	.EQU __sm_powerdown=0x04
+;PCODE: $00000006 VOL: 0
+	.EQU __sm_powersave=0x06
+;PCODE: $00000007 VOL: 0
+	.EQU __sm_standby=0x0C
+;PCODE: $00000008 VOL: 0
+	.EQU __sm_ext_standby=0x0E
+;PCODE: $00000009 VOL: 0
+	.SET power_ctrl_reg=smcr
+;PCODE: $0000000A VOL: 0
+	#endif
+;PCODE: $0000000B VOL: 0
+;PCODE: $0000000C VOL: 0
+;#include "ADE7753.h"
+;#include "scan_led.h"
+;#include <delay.h>
+;
+;
+;#define ADC1    2
+;#define ADC_SET_VOLTAGE    3
+;#define ADC3    4
+;
+;#define ADC_SET_VOLTAGE_VALUE_MIN   100
+;#define ADC_SET_VOLTAGE_VALUE_MAX   1000
+;#define ADC_SET_VOLTAGE_RATIO   350
+;
+;#define BUZZER  PORTC.5
+;
+;#define BUZZER_ON   BUZZER = 1
+;#define BUZZER_OFF  BUZZER = 0
+;
+;#define PHASE_1 PORTC.4
+;#define PHASE_2 PORTC.3
+;
+;#define VOLTAGE_RATIO   1000
+;#define CURRENT_RATIO   300
+;
+;#define NUM_SAMPLE  20
+;#define NUM_FILTER  5
+;// Declare your global variables here
+;unsigned long   Ul_Voltage_Buff[NUM_SAMPLE];
+;unsigned long   Ul_Current_Buff[NUM_SAMPLE];
+;
+;unsigned int    Uint_Voltage;
+;unsigned int    Uint_Current;
+;
+;unsigned char   Uc_Buff_Count = 0;
+;// Voltage Reference: AREF pin
+;#define ADC_VREF_TYPE ((0<<REFS1) | (0<<REFS0) | (0<<ADLAR))
+;
+;// Read the AD conversion result
+;unsigned int read_adc(unsigned char adc_input)
+; 0000 0041 {
+
+	.CSEG
+;PCODE: $0000000D VOL: 0
+;PCODE: $0000000E VOL: 0
+; 0000 0042     ADMUX=adc_input | ADC_VREF_TYPE;
+;PCODE: $0000000F VOL: 0
+;	adc_input -> Y+0
+;PCODE: $00000010 VOL: 0
+;PCODE: $00000011 VOL: 0
+;PCODE: $00000012 VOL: 0
+; 0000 0043     // Delay needed for the stabilization of the ADC input voltage
+; 0000 0044     delay_us(10);
+;PCODE: $00000013 VOL: 0
+; 0000 0045     // Start the AD conversion
+; 0000 0046     ADCSRA|=(1<<ADSC);
+;PCODE: $00000014 VOL: 0
+;PCODE: $00000015 VOL: 0
+;PCODE: $00000016 VOL: 0
+; 0000 0047     // Wait for the AD conversion to complete
+; 0000 0048     while ((ADCSRA & (1<<ADIF))==0);
+;PCODE: $00000017 VOL: 0
+;PCODE: $00000018 VOL: 0
+;PCODE: $00000019 VOL: 0
+;PCODE: $0000001A VOL: 0
+;PCODE: $0000001B VOL: 0
+;PCODE: $0000001C VOL: 0
+; 0000 0049     ADCSRA|=(1<<ADIF);
+;PCODE: $0000001D VOL: 0
+;PCODE: $0000001E VOL: 0
+;PCODE: $0000001F VOL: 0
+; 0000 004A     return ADCW;
+;PCODE: $00000020 VOL: 0
+;PCODE: $00000021 VOL: 0
+;PCODE: $00000022 VOL: 0
+; 0000 004B }
+;PCODE: $00000023 VOL: 0
+;
+;// Timer1 overflow interrupt service routine
+;interrupt [TIM1_OVF] void timer1_ovf_isr(void)
+; 0000 004F {
+;PCODE: $00000024 VOL: 0
+;PCODE: $00000025 VOL: 0
+; 0000 0050     // Reinitialize Timer1 value
+; 0000 0051     TCNT1H=0xA99A >> 8;
+;PCODE: $00000026 VOL: 0
+;PCODE: $00000027 VOL: 0
+; 0000 0052     TCNT1L=0xA99A & 0xff;
+;PCODE: $00000028 VOL: 0
+;PCODE: $00000029 VOL: 0
+; 0000 0053     // Place your code here
+; 0000 0054     SCAN_LED();
+;PCODE: $0000002A VOL: 0
+; 0000 0055 }
+;PCODE: $0000002B VOL: 0
+;PCODE: $0000002C VOL: 0
+;PCODE: $0000002D VOL: 0
+;
+;void    CONTROL_VOLTAGE(void)
+; 0000 0058 {
+;PCODE: $0000002E VOL: 0
+;PCODE: $0000002F VOL: 0
+; 0000 0059     unsigned int    Uint_Vr_Set_Voltage;
+; 0000 005A     Uint_Vr_Set_Voltage = read_adc(ADC_SET_VOLTAGE);
+;PCODE: $00000030 VOL: 0
+;	Uint_Vr_Set_Voltage -> R16,R17
+;PCODE: $00000031 VOL: 0
+;PCODE: $00000032 VOL: 0
+;PCODE: $00000033 VOL: 0
+; 0000 005B 
+; 0000 005C     if(Uint_Vr_Set_Voltage >= ADC_SET_VOLTAGE_VALUE_MAX) Uint_Vr_Set_Voltage = ADC_SET_VOLTAGE_VALUE_MAX;
+;PCODE: $00000034 VOL: 0
+;PCODE: $00000035 VOL: 0
+;PCODE: $00000036 VOL: 0
+;PCODE: $00000037 VOL: 0
+;PCODE: $00000038 VOL: 0
+; 0000 005D     else if(Uint_Vr_Set_Voltage <= ADC_SET_VOLTAGE_VALUE_MIN) Uint_Vr_Set_Voltage = ADC_SET_VOLTAGE_VALUE_MIN;
+;PCODE: $00000039 VOL: 0
+;PCODE: $0000003A VOL: 0
+;PCODE: $0000003B VOL: 0
+;PCODE: $0000003C VOL: 0
+;PCODE: $0000003D VOL: 0
+;PCODE: $0000003E VOL: 0
+;PCODE: $0000003F VOL: 0
+; 0000 005E 
+; 0000 005F     Uint_Vr_Set_Voltage = (unsigned int)((float)(Uint_Vr_Set_Voltage - ADC_SET_VOLTAGE_VALUE_MIN)*ADC_SET_VOLTAGE_RATIO/ ...
+;PCODE: $00000040 VOL: 0
+;PCODE: $00000041 VOL: 0
+;PCODE: $00000042 VOL: 0
+;PCODE: $00000043 VOL: 0
+;PCODE: $00000044 VOL: 0
+;PCODE: $00000045 VOL: 0
+;PCODE: $00000046 VOL: 0
+;PCODE: $00000047 VOL: 0
+;PCODE: $00000048 VOL: 0
+;PCODE: $00000049 VOL: 0
+;PCODE: $0000004A VOL: 0
+;PCODE: $0000004B VOL: 0
+; 0000 0060 
+; 0000 0061     if(Uint_Vr_Set_Voltage > Uint_Voltage)
+;PCODE: $0000004C VOL: 0
+;PCODE: $0000004D VOL: 0
+;PCODE: $0000004E VOL: 0
+; 0000 0062     {
+; 0000 0063         /* Giam dien ap */
+; 0000 0064     }
+; 0000 0065     else if(Uint_Vr_Set_Voltage < Uint_Voltage)
+;PCODE: $0000004F VOL: 0
+;PCODE: $00000050 VOL: 0
+;PCODE: $00000051 VOL: 0
+;PCODE: $00000052 VOL: 0
+;PCODE: $00000053 VOL: 0
+; 0000 0066     {
+; 0000 0067         /* Tang dien ap */
+; 0000 0068     }
+; 0000 0069 }
+;PCODE: $00000054 VOL: 0
+;PCODE: $00000055 VOL: 0
+;PCODE: $00000056 VOL: 0
+;PCODE: $00000057 VOL: 0
+;PCODE: $00000058 VOL: 0
+;/*
+;Doc thong so dien ap va dong dien, loc nhieu.
+;Loc nhieu va tinh toan ra gia tri thuc cua dong dien va dien ap.
+;Cap nhat cac thong so len led hien thi
+;*/
+;void    READ_CURRENT_INFO(void)
+; 0000 0070 {
+;PCODE: $00000059 VOL: 0
+;PCODE: $0000005A VOL: 0
+; 0000 0071     unsigned long   Ul_Buff[NUM_SAMPLE];
+; 0000 0072     unsigned char   Uc_loop = 0,Uc_loop2 = 0;
+; 0000 0073     unsigned long   Ul_temp;
+; 0000 0074 
+; 0000 0075     Ul_Voltage_Buff[Uc_Buff_Count] = ADE7753_READ(1,VRMS);
+;PCODE: $0000005B VOL: 0
+;PCODE: $0000005C VOL: 0
+;	Ul_Buff -> Y+6
+;	Uc_loop -> R17
+;	Uc_loop2 -> R16
+;	Ul_temp -> Y+2
+;PCODE: $0000005D VOL: 0
+;PCODE: $0000005E VOL: 0
+;PCODE: $0000005F VOL: 0
+;PCODE: $00000060 VOL: 0
+;PCODE: $00000061 VOL: 0
+;PCODE: $00000062 VOL: 0
+;PCODE: $00000063 VOL: 0
+;PCODE: $00000064 VOL: 0
+;PCODE: $00000065 VOL: 0
+;PCODE: $00000066 VOL: 0
+;PCODE: $00000067 VOL: 0
+;PCODE: $00000068 VOL: 0
+;PCODE: $00000069 VOL: 0
+;PCODE: $0000006A VOL: 0
+;PCODE: $0000006B VOL: 0
+;PCODE: $0000006C VOL: 0
+;PCODE: $0000006D VOL: 0
+;PCODE: $0000006E VOL: 0
+; 0000 0076     Ul_Current_Buff[Uc_Buff_Count] = ADE7753_READ(1,IRMS);
+;PCODE: $0000006F VOL: 0
+;PCODE: $00000070 VOL: 0
+;PCODE: $00000071 VOL: 0
+;PCODE: $00000072 VOL: 0
+;PCODE: $00000073 VOL: 0
+;PCODE: $00000074 VOL: 0
+;PCODE: $00000075 VOL: 0
+;PCODE: $00000076 VOL: 0
+;PCODE: $00000077 VOL: 0
+;PCODE: $00000078 VOL: 0
+;PCODE: $00000079 VOL: 0
+;PCODE: $0000007A VOL: 0
+;PCODE: $0000007B VOL: 0
+;PCODE: $0000007C VOL: 0
+; 0000 0077 
+; 0000 0078     /* Tinh toan va loc nhieu gia tri dien ap */
+; 0000 0079     for(Uc_loop = 0; Uc_loop < NUM_SAMPLE; Uc_loop++)
+;PCODE: $0000007D VOL: 0
+;PCODE: $0000007E VOL: 0
+;PCODE: $0000007F VOL: 0
+;PCODE: $00000080 VOL: 0
+;PCODE: $00000081 VOL: 0
+;PCODE: $00000082 VOL: 0
+;PCODE: $00000083 VOL: 0
+;PCODE: $00000084 VOL: 0
+;PCODE: $00000085 VOL: 0
+; 0000 007A     {
+; 0000 007B         Ul_Buff[Uc_loop] = Ul_Voltage_Buff[Uc_loop];
+;PCODE: $00000086 VOL: 0
+;PCODE: $00000087 VOL: 0
+;PCODE: $00000088 VOL: 0
+;PCODE: $00000089 VOL: 0
+;PCODE: $0000008A VOL: 0
+;PCODE: $0000008B VOL: 0
+;PCODE: $0000008C VOL: 0
+;PCODE: $0000008D VOL: 0
+;PCODE: $0000008E VOL: 0
+;PCODE: $0000008F VOL: 0
+;PCODE: $00000090 VOL: 0
+;PCODE: $00000091 VOL: 0
+;PCODE: $00000092 VOL: 0
+;PCODE: $00000093 VOL: 0
+; 0000 007C     }
+;PCODE: $00000094 VOL: 0
+;PCODE: $00000095 VOL: 0
+;PCODE: $00000096 VOL: 0
+;PCODE: $00000097 VOL: 0
+;PCODE: $00000098 VOL: 0
+; 0000 007D     for(Uc_loop = 0; Uc_loop < NUM_SAMPLE; Uc_loop++)
+;PCODE: $00000099 VOL: 0
+;PCODE: $0000009A VOL: 0
+;PCODE: $0000009B VOL: 0
+;PCODE: $0000009C VOL: 0
+;PCODE: $0000009D VOL: 0
+;PCODE: $0000009E VOL: 0
+;PCODE: $0000009F VOL: 0
+;PCODE: $000000A0 VOL: 0
+;PCODE: $000000A1 VOL: 0
+; 0000 007E     {
+; 0000 007F         for(Uc_loop2 = Uc_loop; Uc_loop2 < NUM_SAMPLE; Uc_loop2++)
+;PCODE: $000000A2 VOL: 0
+;PCODE: $000000A3 VOL: 0
+;PCODE: $000000A4 VOL: 0
+;PCODE: $000000A5 VOL: 0
+;PCODE: $000000A6 VOL: 0
+;PCODE: $000000A7 VOL: 0
+;PCODE: $000000A8 VOL: 0
+;PCODE: $000000A9 VOL: 0
+;PCODE: $000000AA VOL: 0
+; 0000 0080         {
+; 0000 0081             if(Ul_Buff[Uc_loop] > Ul_Buff[Uc_loop2])
+;PCODE: $000000AB VOL: 0
+;PCODE: $000000AC VOL: 0
+;PCODE: $000000AD VOL: 0
+;PCODE: $000000AE VOL: 0
+;PCODE: $000000AF VOL: 0
+;PCODE: $000000B0 VOL: 0
+;PCODE: $000000B1 VOL: 0
+;PCODE: $000000B2 VOL: 0
+;PCODE: $000000B3 VOL: 0
+;PCODE: $000000B4 VOL: 0
+;PCODE: $000000B5 VOL: 0
+;PCODE: $000000B6 VOL: 0
+;PCODE: $000000B7 VOL: 0
+;PCODE: $000000B8 VOL: 0
+;PCODE: $000000B9 VOL: 0
+;PCODE: $000000BA VOL: 0
+; 0000 0082             {
+; 0000 0083                 Ul_temp = Ul_Buff[Uc_loop];
+;PCODE: $000000BB VOL: 0
+;PCODE: $000000BC VOL: 0
+;PCODE: $000000BD VOL: 0
+;PCODE: $000000BE VOL: 0
+;PCODE: $000000BF VOL: 0
+;PCODE: $000000C0 VOL: 0
+;PCODE: $000000C1 VOL: 0
+; 0000 0084                 Ul_Buff[Uc_loop] = Ul_Buff[Uc_loop2];
+;PCODE: $000000C2 VOL: 0
+;PCODE: $000000C3 VOL: 0
+;PCODE: $000000C4 VOL: 0
+;PCODE: $000000C5 VOL: 0
+;PCODE: $000000C6 VOL: 0
+;PCODE: $000000C7 VOL: 0
+;PCODE: $000000C8 VOL: 0
+;PCODE: $000000C9 VOL: 0
+;PCODE: $000000CA VOL: 0
+;PCODE: $000000CB VOL: 0
+;PCODE: $000000CC VOL: 0
+;PCODE: $000000CD VOL: 0
+;PCODE: $000000CE VOL: 0
+;PCODE: $000000CF VOL: 0
+; 0000 0085                 Ul_Buff[Uc_loop2] = Ul_temp;
+;PCODE: $000000D0 VOL: 0
+;PCODE: $000000D1 VOL: 0
+;PCODE: $000000D2 VOL: 0
+;PCODE: $000000D3 VOL: 0
+;PCODE: $000000D4 VOL: 0
+;PCODE: $000000D5 VOL: 0
+;PCODE: $000000D6 VOL: 0
+; 0000 0086             }
+; 0000 0087         }
+;PCODE: $000000D7 VOL: 0
+;PCODE: $000000D8 VOL: 0
+;PCODE: $000000D9 VOL: 0
+;PCODE: $000000DA VOL: 0
+;PCODE: $000000DB VOL: 0
+;PCODE: $000000DC VOL: 0
+; 0000 0088     }
+;PCODE: $000000DD VOL: 0
+;PCODE: $000000DE VOL: 0
+;PCODE: $000000DF VOL: 0
+;PCODE: $000000E0 VOL: 0
+;PCODE: $000000E1 VOL: 0
+; 0000 0089     Ul_temp = 0;
+;PCODE: $000000E2 VOL: 0
+;PCODE: $000000E3 VOL: 0
+; 0000 008A     for(Uc_loop = NUM_FILTER; Uc_loop < NUM_SAMPLE - NUM_FILTER; Uc_loop++)
+;PCODE: $000000E4 VOL: 0
+;PCODE: $000000E5 VOL: 0
+;PCODE: $000000E6 VOL: 0
+;PCODE: $000000E7 VOL: 0
+;PCODE: $000000E8 VOL: 0
+;PCODE: $000000E9 VOL: 0
+;PCODE: $000000EA VOL: 0
+;PCODE: $000000EB VOL: 0
+;PCODE: $000000EC VOL: 0
+; 0000 008B     {
+; 0000 008C         Ul_temp += Ul_Buff[Uc_loop];
+;PCODE: $000000ED VOL: 0
+;PCODE: $000000EE VOL: 0
+;PCODE: $000000EF VOL: 0
+;PCODE: $000000F0 VOL: 0
+;PCODE: $000000F1 VOL: 0
+;PCODE: $000000F2 VOL: 0
+;PCODE: $000000F3 VOL: 0
+;PCODE: $000000F4 VOL: 0
+;PCODE: $000000F5 VOL: 0
+; 0000 008D     }
+;PCODE: $000000F6 VOL: 0
+;PCODE: $000000F7 VOL: 0
+;PCODE: $000000F8 VOL: 0
+;PCODE: $000000F9 VOL: 0
+;PCODE: $000000FA VOL: 0
+; 0000 008E     Uint_Voltage = (unsigned int)((float)Ul_temp/(NUM_SAMPLE - 2*NUM_FILTER));
+;PCODE: $000000FB VOL: 0
+;PCODE: $000000FC VOL: 0
+;PCODE: $000000FD VOL: 0
+;PCODE: $000000FE VOL: 0
+;PCODE: $000000FF VOL: 0
+;PCODE: $00000100 VOL: 0
+;PCODE: $00000101 VOL: 0
+; 0000 008F     Uint_data_led1 = Uint_Voltage;
+;PCODE: $00000102 VOL: 0
+;PCODE: $00000103 VOL: 0
+; 0000 0090 
+; 0000 0091     /* Tinh toan va loc nhieu gia tri dong dien */
+; 0000 0092     for(Uc_loop = 0; Uc_loop < NUM_SAMPLE; Uc_loop++)
+;PCODE: $00000104 VOL: 0
+;PCODE: $00000105 VOL: 0
+;PCODE: $00000106 VOL: 0
+;PCODE: $00000107 VOL: 0
+;PCODE: $00000108 VOL: 0
+;PCODE: $00000109 VOL: 0
+;PCODE: $0000010A VOL: 0
+;PCODE: $0000010B VOL: 0
+;PCODE: $0000010C VOL: 0
+; 0000 0093     {
+; 0000 0094         Ul_Buff[Uc_loop] = Ul_Current_Buff[Uc_loop];
+;PCODE: $0000010D VOL: 0
+;PCODE: $0000010E VOL: 0
+;PCODE: $0000010F VOL: 0
+;PCODE: $00000110 VOL: 0
+;PCODE: $00000111 VOL: 0
+;PCODE: $00000112 VOL: 0
+;PCODE: $00000113 VOL: 0
+;PCODE: $00000114 VOL: 0
+;PCODE: $00000115 VOL: 0
+;PCODE: $00000116 VOL: 0
+;PCODE: $00000117 VOL: 0
+;PCODE: $00000118 VOL: 0
+;PCODE: $00000119 VOL: 0
+;PCODE: $0000011A VOL: 0
+; 0000 0095     }
+;PCODE: $0000011B VOL: 0
+;PCODE: $0000011C VOL: 0
+;PCODE: $0000011D VOL: 0
+;PCODE: $0000011E VOL: 0
+;PCODE: $0000011F VOL: 0
+; 0000 0096     for(Uc_loop = 0; Uc_loop < NUM_SAMPLE; Uc_loop++)
+;PCODE: $00000120 VOL: 0
+;PCODE: $00000121 VOL: 0
+;PCODE: $00000122 VOL: 0
+;PCODE: $00000123 VOL: 0
+;PCODE: $00000124 VOL: 0
+;PCODE: $00000125 VOL: 0
+;PCODE: $00000126 VOL: 0
+;PCODE: $00000127 VOL: 0
+;PCODE: $00000128 VOL: 0
+; 0000 0097     {
+; 0000 0098         for(Uc_loop2 = Uc_loop; Uc_loop2 < NUM_SAMPLE; Uc_loop2++)
+;PCODE: $00000129 VOL: 0
+;PCODE: $0000012A VOL: 0
+;PCODE: $0000012B VOL: 0
+;PCODE: $0000012C VOL: 0
+;PCODE: $0000012D VOL: 0
+;PCODE: $0000012E VOL: 0
+;PCODE: $0000012F VOL: 0
+;PCODE: $00000130 VOL: 0
+;PCODE: $00000131 VOL: 0
+; 0000 0099         {
+; 0000 009A             if(Ul_Buff[Uc_loop] > Ul_Buff[Uc_loop2])
+;PCODE: $00000132 VOL: 0
+;PCODE: $00000133 VOL: 0
+;PCODE: $00000134 VOL: 0
+;PCODE: $00000135 VOL: 0
+;PCODE: $00000136 VOL: 0
+;PCODE: $00000137 VOL: 0
+;PCODE: $00000138 VOL: 0
+;PCODE: $00000139 VOL: 0
+;PCODE: $0000013A VOL: 0
+;PCODE: $0000013B VOL: 0
+;PCODE: $0000013C VOL: 0
+;PCODE: $0000013D VOL: 0
+;PCODE: $0000013E VOL: 0
+;PCODE: $0000013F VOL: 0
+;PCODE: $00000140 VOL: 0
+;PCODE: $00000141 VOL: 0
+; 0000 009B             {
+; 0000 009C                 Ul_temp = Ul_Buff[Uc_loop];
+;PCODE: $00000142 VOL: 0
+;PCODE: $00000143 VOL: 0
+;PCODE: $00000144 VOL: 0
+;PCODE: $00000145 VOL: 0
+;PCODE: $00000146 VOL: 0
+;PCODE: $00000147 VOL: 0
+;PCODE: $00000148 VOL: 0
+; 0000 009D                 Ul_Buff[Uc_loop] = Ul_Buff[Uc_loop2];
+;PCODE: $00000149 VOL: 0
+;PCODE: $0000014A VOL: 0
+;PCODE: $0000014B VOL: 0
+;PCODE: $0000014C VOL: 0
+;PCODE: $0000014D VOL: 0
+;PCODE: $0000014E VOL: 0
+;PCODE: $0000014F VOL: 0
+;PCODE: $00000150 VOL: 0
+;PCODE: $00000151 VOL: 0
+;PCODE: $00000152 VOL: 0
+;PCODE: $00000153 VOL: 0
+;PCODE: $00000154 VOL: 0
+;PCODE: $00000155 VOL: 0
+;PCODE: $00000156 VOL: 0
+; 0000 009E                 Ul_Buff[Uc_loop2] = Ul_temp;
+;PCODE: $00000157 VOL: 0
+;PCODE: $00000158 VOL: 0
+;PCODE: $00000159 VOL: 0
+;PCODE: $0000015A VOL: 0
+;PCODE: $0000015B VOL: 0
+;PCODE: $0000015C VOL: 0
+;PCODE: $0000015D VOL: 0
+; 0000 009F             }
+; 0000 00A0         }
+;PCODE: $0000015E VOL: 0
+;PCODE: $0000015F VOL: 0
+;PCODE: $00000160 VOL: 0
+;PCODE: $00000161 VOL: 0
+;PCODE: $00000162 VOL: 0
+;PCODE: $00000163 VOL: 0
+; 0000 00A1     }
+;PCODE: $00000164 VOL: 0
+;PCODE: $00000165 VOL: 0
+;PCODE: $00000166 VOL: 0
+;PCODE: $00000167 VOL: 0
+;PCODE: $00000168 VOL: 0
+; 0000 00A2     Ul_temp = 0;
+;PCODE: $00000169 VOL: 0
+;PCODE: $0000016A VOL: 0
+; 0000 00A3     for(Uc_loop = NUM_FILTER; Uc_loop < NUM_SAMPLE - NUM_FILTER; Uc_loop++)
+;PCODE: $0000016B VOL: 0
+;PCODE: $0000016C VOL: 0
+;PCODE: $0000016D VOL: 0
+;PCODE: $0000016E VOL: 0
+;PCODE: $0000016F VOL: 0
+;PCODE: $00000170 VOL: 0
+;PCODE: $00000171 VOL: 0
+;PCODE: $00000172 VOL: 0
+;PCODE: $00000173 VOL: 0
+; 0000 00A4     {
+; 0000 00A5         Ul_temp += Ul_Buff[Uc_loop];
+;PCODE: $00000174 VOL: 0
+;PCODE: $00000175 VOL: 0
+;PCODE: $00000176 VOL: 0
+;PCODE: $00000177 VOL: 0
+;PCODE: $00000178 VOL: 0
+;PCODE: $00000179 VOL: 0
+;PCODE: $0000017A VOL: 0
+;PCODE: $0000017B VOL: 0
+;PCODE: $0000017C VOL: 0
+; 0000 00A6     }
+;PCODE: $0000017D VOL: 0
+;PCODE: $0000017E VOL: 0
+;PCODE: $0000017F VOL: 0
+;PCODE: $00000180 VOL: 0
+;PCODE: $00000181 VOL: 0
+; 0000 00A7     Uint_Current = (unsigned int)((float)Ul_temp/(NUM_SAMPLE - 2*NUM_FILTER));
+;PCODE: $00000182 VOL: 0
+;PCODE: $00000183 VOL: 0
+;PCODE: $00000184 VOL: 0
+;PCODE: $00000185 VOL: 0
+;PCODE: $00000186 VOL: 0
+;PCODE: $00000187 VOL: 0
+;PCODE: $00000188 VOL: 0
+; 0000 00A8     Uint_data_led1 = Uint_Current;
+;PCODE: $00000189 VOL: 0
+;PCODE: $0000018A VOL: 0
+; 0000 00A9 
+; 0000 00AA 
+; 0000 00AB     Uc_Buff_Count++;
+;PCODE: $0000018B VOL: 0
+; 0000 00AC     if(Uc_Buff_Count >= NUM_SAMPLE) Uc_Buff_Count = 0;
+;PCODE: $0000018C VOL: 0
+;PCODE: $0000018D VOL: 0
+;PCODE: $0000018E VOL: 0
+;PCODE: $0000018F VOL: 0
+; 0000 00AD }
+;PCODE: $00000190 VOL: 0
+;PCODE: $00000191 VOL: 0
+;PCODE: $00000192 VOL: 0
+;PCODE: $00000193 VOL: 0
+;PCODE: $00000194 VOL: 0
+;
+;void main(void)
+; 0000 00B0 {
+;PCODE: $00000195 VOL: 0
+; 0000 00B1 // Declare your local variables here
+; 0000 00B2 
+; 0000 00B3 // Crystal Oscillator division factor: 1
+; 0000 00B4 #pragma optsize-
+; 0000 00B5 CLKPR=(1<<CLKPCE);
+;PCODE: $00000196 VOL: 0
+;PCODE: $00000197 VOL: 0
+; 0000 00B6 CLKPR=(0<<CLKPCE) | (0<<CLKPS3) | (0<<CLKPS2) | (0<<CLKPS1) | (0<<CLKPS0);
+;PCODE: $00000198 VOL: 0
+;PCODE: $00000199 VOL: 0
+; 0000 00B7 #ifdef _OPTIMIZE_SIZE_
+; 0000 00B8 #pragma optsize+
+; 0000 00B9 #endif
+; 0000 00BA 
+; 0000 00BB // Input/Output Ports initialization
+; 0000 00BC // Port B initialization
+; 0000 00BD // Function: Bit7=In Bit6=In Bit5=In Bit4=Out Bit3=In Bit2=Out Bit1=In Bit0=Out
+; 0000 00BE DDRB=(0<<DDB7) | (0<<DDB6) | (0<<DDB5) | (1<<DDB4) | (0<<DDB3) | (1<<DDB2) | (0<<DDB1) | (1<<DDB0);
+;PCODE: $0000019A VOL: 0
+;PCODE: $0000019B VOL: 0
+; 0000 00BF // State: Bit7=T Bit6=T Bit5=T Bit4=0 Bit3=T Bit2=0 Bit1=T Bit0=0
+; 0000 00C0 PORTB=(0<<PORTB7) | (0<<PORTB6) | (0<<PORTB5) | (0<<PORTB4) | (0<<PORTB3) | (0<<PORTB2) | (0<<PORTB1) | (0<<PORTB0);
+;PCODE: $0000019C VOL: 0
+;PCODE: $0000019D VOL: 0
+; 0000 00C1 
+; 0000 00C2 // Port C initialization
+; 0000 00C3 // Function: Bit6=In Bit5=Out Bit4=In Bit3=In Bit2=In Bit1=In Bit0=Out
+; 0000 00C4 DDRC=(0<<DDC6) | (1<<DDC5) | (0<<DDC4) | (0<<DDC3) | (0<<DDC2) | (0<<DDC1) | (1<<DDC0);
+;PCODE: $0000019E VOL: 0
+;PCODE: $0000019F VOL: 0
+; 0000 00C5 // State: Bit6=T Bit5=0 Bit4=T Bit3=T Bit2=T Bit1=T Bit0=0
+; 0000 00C6 PORTC=(0<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (0<<PORTC3) | (0<<PORTC2) | (0<<PORTC1) | (0<<PORTC0);
+;PCODE: $000001A0 VOL: 0
+;PCODE: $000001A1 VOL: 0
+; 0000 00C7 
+; 0000 00C8 // Port D initialization
+; 0000 00C9 // Function: Bit7=Out Bit6=In Bit5=Out Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
+; 0000 00CA DDRD=(1<<DDD7) | (0<<DDD6) | (1<<DDD5) | (0<<DDD4) | (0<<DDD3) | (0<<DDD2) | (0<<DDD1) | (0<<DDD0);
+;PCODE: $000001A2 VOL: 0
+;PCODE: $000001A3 VOL: 0
+; 0000 00CB // State: Bit7=0 Bit6=T Bit5=0 Bit4=T Bit3=T Bit2=T Bit1=T Bit0=T
+; 0000 00CC PORTD=(0<<PORTD7) | (0<<PORTD6) | (0<<PORTD5) | (0<<PORTD4) | (0<<PORTD3) | (0<<PORTD2) | (0<<PORTD1) | (0<<PORTD0);
+;PCODE: $000001A4 VOL: 0
+;PCODE: $000001A5 VOL: 0
+; 0000 00CD 
+; 0000 00CE // Timer/Counter 0 initialization
+; 0000 00CF // Clock source: System Clock
+; 0000 00D0 // Clock value: Timer 0 Stopped
+; 0000 00D1 // Mode: Normal top=0xFF
+; 0000 00D2 // OC0A output: Disconnected
+; 0000 00D3 // OC0B output: Disconnected
+; 0000 00D4 TCCR0A=(0<<COM0A1) | (0<<COM0A0) | (0<<COM0B1) | (0<<COM0B0) | (0<<WGM01) | (0<<WGM00);
+;PCODE: $000001A6 VOL: 0
+;PCODE: $000001A7 VOL: 0
+; 0000 00D5 TCCR0B=(0<<WGM02) | (0<<CS02) | (0<<CS01) | (0<<CS00);
+;PCODE: $000001A8 VOL: 0
+;PCODE: $000001A9 VOL: 0
+; 0000 00D6 TCNT0=0x00;
+;PCODE: $000001AA VOL: 0
+;PCODE: $000001AB VOL: 0
+; 0000 00D7 OCR0A=0x00;
+;PCODE: $000001AC VOL: 0
+;PCODE: $000001AD VOL: 0
+; 0000 00D8 OCR0B=0x00;
+;PCODE: $000001AE VOL: 0
+;PCODE: $000001AF VOL: 0
+; 0000 00D9 
+; 0000 00DA // Timer/Counter 1 initialization
+; 0000 00DB // Clock source: System Clock
+; 0000 00DC // Clock value: 11059.200 kHz
+; 0000 00DD // Mode: Normal top=0xFFFF
+; 0000 00DE // OC1A output: Disconnected
+; 0000 00DF // OC1B output: Disconnected
+; 0000 00E0 // Noise Canceler: Off
+; 0000 00E1 // Input Capture on Falling Edge
+; 0000 00E2 // Timer Period: 2 ms
+; 0000 00E3 // Timer1 Overflow Interrupt: On
+; 0000 00E4 // Input Capture Interrupt: Off
+; 0000 00E5 // Compare A Match Interrupt: Off
+; 0000 00E6 // Compare B Match Interrupt: Off
+; 0000 00E7 TCCR1A=(0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (0<<WGM10);
+;PCODE: $000001B0 VOL: 0
+;PCODE: $000001B1 VOL: 0
+; 0000 00E8 TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (0<<WGM12) | (0<<CS12) | (0<<CS11) | (1<<CS10);
+;PCODE: $000001B2 VOL: 0
+;PCODE: $000001B3 VOL: 0
+; 0000 00E9 TCNT1H=0xA9;
+;PCODE: $000001B4 VOL: 0
+;PCODE: $000001B5 VOL: 0
+; 0000 00EA TCNT1L=0x9A;
+;PCODE: $000001B6 VOL: 0
+;PCODE: $000001B7 VOL: 0
+; 0000 00EB ICR1H=0x00;
+;PCODE: $000001B8 VOL: 0
+;PCODE: $000001B9 VOL: 0
+; 0000 00EC ICR1L=0x00;
+;PCODE: $000001BA VOL: 0
+;PCODE: $000001BB VOL: 0
+; 0000 00ED OCR1AH=0x00;
+;PCODE: $000001BC VOL: 0
+;PCODE: $000001BD VOL: 0
+; 0000 00EE OCR1AL=0x00;
+;PCODE: $000001BE VOL: 0
+;PCODE: $000001BF VOL: 0
+; 0000 00EF OCR1BH=0x00;
+;PCODE: $000001C0 VOL: 0
+;PCODE: $000001C1 VOL: 0
+; 0000 00F0 OCR1BL=0x00;
+;PCODE: $000001C2 VOL: 0
+;PCODE: $000001C3 VOL: 0
+; 0000 00F1 
+; 0000 00F2 // Timer/Counter 2 initialization
+; 0000 00F3 // Clock source: System Clock
+; 0000 00F4 // Clock value: Timer2 Stopped
+; 0000 00F5 // Mode: Normal top=0xFF
+; 0000 00F6 // OC2A output: Disconnected
+; 0000 00F7 // OC2B output: Disconnected
+; 0000 00F8 ASSR=(0<<EXCLK) | (0<<AS2);
+;PCODE: $000001C4 VOL: 0
+;PCODE: $000001C5 VOL: 0
+; 0000 00F9 TCCR2A=(0<<COM2A1) | (0<<COM2A0) | (0<<COM2B1) | (0<<COM2B0) | (0<<WGM21) | (0<<WGM20);
+;PCODE: $000001C6 VOL: 0
+;PCODE: $000001C7 VOL: 0
+; 0000 00FA TCCR2B=(0<<WGM22) | (0<<CS22) | (0<<CS21) | (0<<CS20);
+;PCODE: $000001C8 VOL: 0
+;PCODE: $000001C9 VOL: 0
+; 0000 00FB TCNT2=0x00;
+;PCODE: $000001CA VOL: 0
+;PCODE: $000001CB VOL: 0
+; 0000 00FC OCR2A=0x00;
+;PCODE: $000001CC VOL: 0
+;PCODE: $000001CD VOL: 0
+; 0000 00FD OCR2B=0x00;
+;PCODE: $000001CE VOL: 0
+;PCODE: $000001CF VOL: 0
+; 0000 00FE 
+; 0000 00FF // Timer/Counter 0 Interrupt(s) initialization
+; 0000 0100 TIMSK0=(0<<OCIE0B) | (0<<OCIE0A) | (0<<TOIE0);
+;PCODE: $000001D0 VOL: 0
+;PCODE: $000001D1 VOL: 0
+; 0000 0101 
+; 0000 0102 // Timer/Counter 1 Interrupt(s) initialization
+; 0000 0103 TIMSK1=(0<<ICIE1) | (0<<OCIE1B) | (0<<OCIE1A) | (0<<TOIE1);
+;PCODE: $000001D2 VOL: 0
+;PCODE: $000001D3 VOL: 0
+; 0000 0104 
+; 0000 0105 // Timer/Counter 2 Interrupt(s) initialization
+; 0000 0106 TIMSK2=(0<<OCIE2B) | (0<<OCIE2A) | (0<<TOIE2);
+;PCODE: $000001D4 VOL: 0
+;PCODE: $000001D5 VOL: 0
+; 0000 0107 
+; 0000 0108 // External Interrupt(s) initialization
+; 0000 0109 // INT0: Off
+; 0000 010A // INT1: Off
+; 0000 010B // Interrupt on any change on pins PCINT0-7: Off
+; 0000 010C // Interrupt on any change on pins PCINT8-14: Off
+; 0000 010D // Interrupt on any change on pins PCINT16-23: Off
+; 0000 010E EICRA=(0<<ISC11) | (0<<ISC10) | (0<<ISC01) | (0<<ISC00);
+;PCODE: $000001D6 VOL: 0
+;PCODE: $000001D7 VOL: 0
+; 0000 010F EIMSK=(0<<INT1) | (0<<INT0);
+;PCODE: $000001D8 VOL: 0
+;PCODE: $000001D9 VOL: 0
+; 0000 0110 PCICR=(0<<PCIE2) | (0<<PCIE1) | (0<<PCIE0);
+;PCODE: $000001DA VOL: 0
+;PCODE: $000001DB VOL: 0
+; 0000 0111 
+; 0000 0112 // USART initialization
+; 0000 0113 // USART disabled
+; 0000 0114 UCSR0B=(0<<RXCIE0) | (0<<TXCIE0) | (0<<UDRIE0) | (0<<RXEN0) | (0<<TXEN0) | (0<<UCSZ02) | (0<<RXB80) | (0<<TXB80);
+;PCODE: $000001DC VOL: 0
+;PCODE: $000001DD VOL: 0
+; 0000 0115 
+; 0000 0116 // Analog Comparator initialization
+; 0000 0117 // Analog Comparator: Off
+; 0000 0118 // The Analog Comparator's positive input is
+; 0000 0119 // connected to the AIN0 pin
+; 0000 011A // The Analog Comparator's negative input is
+; 0000 011B // connected to the AIN1 pin
+; 0000 011C ACSR=(1<<ACD) | (0<<ACBG) | (0<<ACO) | (0<<ACI) | (0<<ACIE) | (0<<ACIC) | (0<<ACIS1) | (0<<ACIS0);
+;PCODE: $000001DE VOL: 0
+;PCODE: $000001DF VOL: 0
+; 0000 011D // Digital input buffer on AIN0: On
+; 0000 011E // Digital input buffer on AIN1: On
+; 0000 011F DIDR1=(0<<AIN0D) | (0<<AIN1D);
+;PCODE: $000001E0 VOL: 0
+;PCODE: $000001E1 VOL: 0
+; 0000 0120 
+; 0000 0121 // ADC initialization
+; 0000 0122 // ADC Clock frequency: 691.200 kHz
+; 0000 0123 // ADC Voltage Reference: AREF pin
+; 0000 0124 // ADC Auto Trigger Source: ADC Stopped
+; 0000 0125 // Digital input buffers on ADC0: On, ADC1: On, ADC2: On, ADC3: On
+; 0000 0126 // ADC4: On, ADC5: On
+; 0000 0127 DIDR0=(0<<ADC5D) | (0<<ADC4D) | (0<<ADC3D) | (0<<ADC2D) | (0<<ADC1D) | (0<<ADC0D);
+;PCODE: $000001E2 VOL: 0
+;PCODE: $000001E3 VOL: 0
+; 0000 0128 ADMUX=ADC_VREF_TYPE;
+;PCODE: $000001E4 VOL: 0
+;PCODE: $000001E5 VOL: 0
+; 0000 0129 ADCSRA=(1<<ADEN) | (0<<ADSC) | (0<<ADATE) | (0<<ADIF) | (0<<ADIE) | (1<<ADPS2) | (0<<ADPS1) | (0<<ADPS0);
+;PCODE: $000001E6 VOL: 0
+;PCODE: $000001E7 VOL: 0
+; 0000 012A ADCSRB=(0<<ADTS2) | (0<<ADTS1) | (0<<ADTS0);
+;PCODE: $000001E8 VOL: 0
+;PCODE: $000001E9 VOL: 0
+; 0000 012B 
+; 0000 012C // SPI initialization
+; 0000 012D // SPI disabled
+; 0000 012E SPCR=(0<<SPIE) | (0<<SPE) | (0<<DORD) | (0<<MSTR) | (0<<CPOL) | (0<<CPHA) | (0<<SPR1) | (0<<SPR0);
+;PCODE: $000001EA VOL: 0
+;PCODE: $000001EB VOL: 0
+; 0000 012F 
+; 0000 0130 // TWI initialization
+; 0000 0131 // TWI disabled
+; 0000 0132 TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
+;PCODE: $000001EC VOL: 0
+;PCODE: $000001ED VOL: 0
+; 0000 0133 
+; 0000 0134 while (1)
+;PCODE: $000001EE VOL: 0
+; 0000 0135       {
+; 0000 0136       // Place your code here
+; 0000 0137         READ_CURRENT_INFO();
+;PCODE: $000001EF VOL: 0
+; 0000 0138         CONTROL_VOLTAGE();
+;PCODE: $000001F0 VOL: 0
+; 0000 0139 
+; 0000 013A       }
+;PCODE: $000001F1 VOL: 0
+;PCODE: $000001F2 VOL: 0
+; 0000 013B }
+;PCODE: $000001F3 VOL: 0
+;PCODE: $000001F4 VOL: 0
+;PCODE: $000001F5 VOL: 0

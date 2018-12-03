@@ -1,0 +1,12 @@
+VERSION:3 SOURCE_TIMESTAMP:4D825433
+NODE:I LEVEL:0 LINE:1 "D:\My Data\TanPhat\AC-power-supply-adj\scan_led.h"
+NODE:I LEVEL:0 LINE:2 "D:\My Data\TanPhat\AC-power-supply-adj\SPI_SOFTWARE.h"
+NODE:V LEVEL:0 LINE:4 "Uc_led_count -> RAM:????"
+NODE:V LEVEL:0 LINE:5 "Uc_led_data -> RAM:????"
+NODE:V LEVEL:0 LINE:6 "Uint_data_led1 -> RAM:????"
+NODE:V LEVEL:0 LINE:7 "Uint_data_led2 -> RAM:????"
+NODE:V LEVEL:0 LINE:8 "Uint_data_led3 -> RAM:????"
+NODE:V LEVEL:0 LINE:9 "Uc_Select_led -> R9"
+NODE:V LEVEL:0 LINE:11 "BCDLED -> RAM:????"
+NODE:F LEVEL:0 LINE:21 "SEND_DATA_LED(unsigned char num_bytes,unsigned char byte_first,unsigned char byte_second,unsigned char byte_third)"
+NODE:F LEVEL:0 LINE:40 "SCAN_LED(void)"
