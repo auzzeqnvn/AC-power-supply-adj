@@ -134,14 +134,17 @@ unsigned long int    ADE7753_READ(unsigned char IC_CS,unsigned char addr,unsigne
 
 void    ADE7753_INIT(void)
 {
+    unsigned long   res;
     ADE7753_WRITE(1,MODE,0x00,0x00,0x00);
     delay_ms(200);
     ADE7753_WRITE(1,IRQEN,0x00,0x10,0x00);
-    delay_ms(200);
+    res = ADE7753_READ(1,IRQEN);
     ADE7753_WRITE(1,RSTSTATUS,0x00,0x00,0x00);
     delay_ms(200);
     ADE7753_WRITE(1,SAGLVL,0X2a,0X00,0X00);
+    res = ADE7753_READ(1,SAGLVL);
     delay_ms(200);
     ADE7753_WRITE(1,SAGCYC,0XFF,0X00,0X00);
+    res = ADE7753_READ(1,SAGCYC);
     delay_ms(200);
 }

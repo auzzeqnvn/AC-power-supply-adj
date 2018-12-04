@@ -46,7 +46,7 @@ Data Stack size         : 256
 #define PHASE_1 PORTB.1
 #define PHASE_2 PORTB.2
 
-#define VOLTAGE_RATIO   12765
+#define VOLTAGE_RATIO   554
 #define CURRENT_RATIO   566
 
 #define NUM_SAMPLE  30
@@ -190,12 +190,10 @@ void    READ_CURRENT_INFO(void)
         Ul_temp += Ul_Buff[Uc_loop];
     }
     Ul_temp = Ul_temp/(NUM_SAMPLE - 2*NUM_FILTER);
-    // Ul_temp = Ul_temp / 100;
-    // Uint_Voltage = (unsigned int)((float)(Ul_temp*(0.015233297 + Ul_temp*(0.0000003453386290397 - Ul_temp*0.0000000000109929))));
-    if(Uc_Timer_Update_Display >= TIME_UPDATE_DISPLAY)   
+    // if(Uc_Timer_Update_Display >= TIME_UPDATE_DISPLAY)   
     {
-        // Uint_data_led1 = Ul_temp /10000;
-        // Uint_data_led2 = Ul_temp %10000;
+        // Uint_data_led1 = Ul_temp >>16 & 0xff;
+        // Uint_data_led2 = Ul_temp >>8 & 0xff;
     }
     Uint_Voltage = (unsigned int)((float)Ul_temp/VOLTAGE_RATIO);
     if(Uc_Timer_Update_Display >= TIME_UPDATE_DISPLAY)    Uint_data_led1 = Uint_Voltage;
@@ -417,7 +415,7 @@ TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 // Global enable interrupts
 #asm("sei")
 
-// ADE7753_INIT();
+ADE7753_INIT();
 for(Uc_Buff_Count = 0; Uc_Buff_Count < NUM_SAMPLE; Uc_Buff_Count++)
 {
     Ul_Voltage_Buff[Uc_Buff_Count] = 0;

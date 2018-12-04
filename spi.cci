@@ -1,3 +1,3 @@
-VERSION:3 SOURCE_TIMESTAMP:4D6FA6A0
-NODE:I LEVEL:0 LINE:1 "D:\My Data\TanPhat\AC-power-supply-adj\SPI_SOFTWARE.h"
+VERSION:3 SOURCE_TIMESTAMP:4D8344E0
+NODE:I LEVEL:0 LINE:1 "D:\Mydata\Work\Tan Phat\Bien doi nguon 3 phase\Firmware_2\AC-power-supply-adj\SPI_SOFTWARE.h"
 NODE:F LEVEL:0 LINE:4 "SPI_SENDBYTE(unsigned char data,unsigned char action)"

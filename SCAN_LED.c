@@ -8,7 +8,12 @@ unsigned int    Uint_data_led2 = 0;
 unsigned int    Uint_data_led3 = 0;
 unsigned char   Uc_Select_led=1;
 
-unsigned char   BCDLED[11]={0xB7,0x81,0x3D,0xAD,0x8B,0xAE,0xBE,0x85,0xBF,0xAF,0};
+bit   Bit_Led1_Warning = 0;
+bit   Bit_Led2_Warning = 0;
+
+unsigned int   Uint_Warning_Count = 0;
+
+unsigned char   BCDLED[11]={0xEE,0x88,0xB6,0xBC,0xD8,0x7C,0x7E,0xA8,0xFE,0xFC,0x00};
 
 /* Day du lieu quet led qua duong spi_software
 Co thẻ day tu 1 den 3 byte du lieu.
@@ -57,33 +62,41 @@ void    SCAN_LED(void)
     /* 7-seg 1*/
     data = Uint_data_led1/1000;
     byte1 = BCDLED[data];
-    if(byte1 & bit_left) byte3 |= 0x01;
+    if(byte1 & bit_left) byte3 |= 0x20;
     data = Uint_data_led1/100%10;
     byte1 = BCDLED[data];
-    if(byte1 & bit_left) byte3 |= 0x02;
+    if(byte1 & bit_left) byte3 |= 0x40;
     data = Uint_data_led1/10%10;
     byte1 = BCDLED[data];
-    byte1 |= 0x40;
-    if(byte1 & bit_left) byte3 |= 0x04;
+    byte1 |= 0x01;
+    if(byte1 & bit_left) byte3 |= 0x80;
     data = Uint_data_led1%10;
     byte1 = BCDLED[data];
-    if(byte1 & bit_left) byte3 |= 0x08;
+    if(byte1 & bit_left) byte3 |= 0x10;
     /* 7-seg 2 */
     data = Uint_data_led2/1000;
     byte1 = BCDLED[data];
-    if(byte1 & bit_left) byte3 |= 0x80;
+    if(Bit_Led2_Warning && Uint_Warning_Count < TIME_WARNING_DISPLAY/2)    byte1 = BCDLED[10];
+    if(byte1 & bit_left) byte3 |= 0x08;
     data = Uint_data_led2/100%10;
     byte1 = BCDLED[data];
-    byte1 |= 0x40;
-    if(byte1 & bit_left) byte3 |= 0x40;
+    byte1 |= 0x01;
+    if(Bit_Led2_Warning && Uint_Warning_Count < TIME_WARNING_DISPLAY/2)    byte1 = BCDLED[10];
+    if(byte1 & bit_left) byte3 |= 0x04;
     data = Uint_data_led2/10%10;
     byte1 = BCDLED[data];
-    if(byte1 & bit_left) byte3 |= 0x20;
+    if(Bit_Led2_Warning && Uint_Warning_Count < TIME_WARNING_DISPLAY/2)    byte1 = BCDLED[10];
+    if(byte1 & bit_left) byte3 |= 0x02;
     data = Uint_data_led2%10;
     byte1 = BCDLED[data];
-    if(byte1 & bit_left) byte3 |= 0x10;
+    if(Bit_Led2_Warning && Uint_Warning_Count < TIME_WARNING_DISPLAY/2)    byte1 = BCDLED[10];
+    if(byte1 & bit_left) byte3 |= 0x01;
+    bit_left = 0xff - bit_left;
+    // SEND_DATA_LED(2,bit_left,byte3,byte2);
+    SEND_DATA_LED(2,byte3,bit_left,byte2);
 
-    SEND_DATA_LED(2,bit_left,byte3,byte2);
+    Uint_Warning_Count++;
+    if(Uint_Warning_Count > TIME_WARNING_DISPLAY)  Uint_Warning_Count = 0;
 }
 
 

@@ -3,9 +3,10 @@ Variable                                                                        
 ------------------------------------------------------------------------------------------------
 Uint_data_led1                                                                    0x0200       2
 Uint_data_led2                                                                    0x0202       2
-Ul_Voltage_Buff                                                                   0x0204      80
-Ul_Current_Buff                                                                   0x0254      80
-BCDLED                                                                            0x02A4      11
+Ul_Voltage_Buff                                                                   0x0204     120
+Ul_Current_Buff                                                                   0x027C     120
+Uint_Warning_Count                                                                0x02F4       2
+BCDLED                                                                            0x02F6      11
 
 EEPROM Allocation [bytes]
 Variable                                                                          Address   Size
@@ -17,19 +18,27 @@ Variable                                                                        
 Uint_Voltage                                                                      R5,R6        2
 Uint_Current                                                                      R7,R8        2
 Uc_Buff_Count                                                                     R10          1
-Uc_Select_led                                                                     R9           1
+Uc_Buzzer_Count                                                                   R9           1
+Bit_En_Meas                                                                       GPIOR0.2  1bit
+Uc_Voltage_Duty                                                                   R12          1
+Uc_Timer_Update_Display                                                           R13,R14      2
+Bit_Led1_Warning                                                                  GPIOR0.0  1bit
+Bit_Led2_Warning                                                                  GPIOR0.1  1bit
+Uc_Select_led                                                                     R11          1
 
 FLASH Allocation [words]
 Function                                                                          Address   Size
 ------------------------------------------------------------------------------------------------
-read_adc                                                                          0x00056     27
-timer1_ovf_isr                                                                    0x00071     34
-CONTROL_VOLTAGE                                                                   0x00093     38
-READ_CURRENT_INFO                                                                 0x000B9    348
-main                                                                              0x00215     94
-SPI_7753_SEND                                                                     0x00273     26
-SPI_7753_RECEIVE                                                                  0x0028D     22
-ADE7753_READ                                                                      0x002A3    125
-SEND_DATA_LED                                                                     0x00320     56
-SCAN_LED                                                                          0x00358    172
-SPI_SENDBYTE                                                                      0x00404     27
+read_adc                                                                          0x00058     28
+timer2_ovf_isr                                                                    0x00074     46
+PWM_PHASE1                                                                        0x000A2     26
+PWM_PHASE2                                                                        0x000BC     28
+CONTROL_VOLTAGE                                                                   0x000D8     25
+READ_CURRENT_INFO                                                                 0x000F1    388
+main                                                                              0x00275    160
+SPI_7753_SEND                                                                     0x00315     28
+SPI_7753_RECEIVE                                                                  0x00331     24
+ADE7753_READ                                                                      0x00349    125
+SEND_DATA_LED                                                                     0x003C6     56
+SCAN_LED                                                                          0x003FE    247
+SPI_SENDBYTE                                                                      0x004F5     27
