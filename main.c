@@ -46,7 +46,7 @@ Data Stack size         : 256
 #define PHASE_1 PORTB.1
 #define PHASE_2 PORTB.2
 
-#define VOLTAGE_RATIO   12765
+#define VOLTAGE_RATIO   5113//5670
 #define CURRENT_RATIO   566
 
 #define NUM_SAMPLE  30
@@ -108,37 +108,31 @@ interrupt [TIM2_OVF] void timer2_ovf_isr(void)
 
 void    PWM_PHASE1(unsigned char duty)
 {
-    unsigned char   pwm = duty*255/100;
+    // unsigned int   pwm = (unsigned int)(duty*255/100);
     if(duty <= 1)
     {
-        // TCCR1A &= (0<<COM1B1);
         OCR1AH=0x00;
         OCR1AL=0;
     }
     else
     {
-        // TCCR1A |= (1<<COM1B1);
-        OCR1AH=0x00;
-        OCR1AL=pwm;
+        OCR1AH=(duty>>8) & 0xff;
+        OCR1AL=duty & 0xff;
     }
 }
 
 void    PWM_PHASE2(unsigned char duty)
 {
-    unsigned char   pwm = (duty)*255/100;
-    // OCR1BH=0x00;
-    // OCR1BL=pwm;
+    //unsigned int   pwm = (unsigned int)(duty*255/100);
     if(duty <= 1)
     {
-        // TCCR1A &= (0<<COM1A1);
         OCR1BH=0x00;
         OCR1BL=0;
     }
     else
     {
-        // TCCR1A |= (1<<COM1A1);
-        OCR1BH=0x00;
-        OCR1BL=pwm;
+        OCR1BH=(duty>>8) & 0xff;
+        OCR1BL=duty & 0xff;
     }
 }
 
@@ -147,7 +141,7 @@ void    CONTROL_VOLTAGE(void)
     unsigned int    Uint_Vr_Set_Voltage;
 
     Uint_Vr_Set_Voltage = read_adc(ADC_SET_VOLTAGE);
-    Uc_Voltage_Duty = (unsigned long)Uint_Vr_Set_Voltage*100/1023;
+    Uc_Voltage_Duty = (unsigned long)Uint_Vr_Set_Voltage*255/1023;
     // Uint_data_led1 = Uint_Vr_Set_Voltage;
     // Uint_data_led2 = Uc_Voltage_Duty;
     // Uint_data_led2 = Uc_Voltage_Duty;
@@ -198,6 +192,21 @@ void    READ_CURRENT_INFO(void)
         // Uint_data_led2 = Ul_temp %10000;
     }
     Uint_Voltage = (unsigned int)((float)Ul_temp/VOLTAGE_RATIO);
+    // if(Uc_Timer_Update_Display >= TIME_UPDATE_DISPLAY)    Uint_data_led2 = Uint_Voltage;
+    if(Uint_Voltage < 40)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.930233));
+    else if(Uint_Voltage < 80)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.92488));
+    else if(Uint_Voltage < 120)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.92131));
+    else if(Uint_Voltage < 160)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.926655));
+    else if(Uint_Voltage < 200)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.9281));
+    else if(Uint_Voltage < 240)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.926283));
+    else if(Uint_Voltage < 280)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.929987));
+    else if(Uint_Voltage < 320)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.937255));
+    else if(Uint_Voltage < 360)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.944272));
+    else if(Uint_Voltage < 400)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.951011));
+    else if(Uint_Voltage < 440)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.955588));
+    else if(Uint_Voltage < 480)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.963109));
+    else if(Uint_Voltage < 520)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.981032));
+
     if(Uc_Timer_Update_Display >= TIME_UPDATE_DISPLAY)    Uint_data_led1 = Uint_Voltage;
 
     Ul_Current_Buff[Uc_Buff_Count] = ADE7753_READ(1,IRMS);
@@ -228,7 +237,7 @@ void    READ_CURRENT_INFO(void)
     Uint_Current = (unsigned int)((float)Ul_temp/CURRENT_RATIO);
     if(Uc_Timer_Update_Display >= TIME_UPDATE_DISPLAY)   
     {
-        // Uint_data_led2 = Uint_Current;
+        Uint_data_led2 = Uint_Current;
         Uc_Timer_Update_Display = 0;
     }
     if(Uint_Current > 550)  Bit_Led2_Warning = 1;
@@ -312,16 +321,16 @@ OCR0B=0x00;
 
 // Timer/Counter 1 initialization
 // Clock source: System Clock
-// Clock value: 11059,200 kHz
-// Mode: Ph. correct PWM top=0x00FF
+// Clock value: 20000.000 kHz
+// Mode: Ph. correct PWM top=0x01FF
 // OC1A output: Non-Inverted PWM
 // OC1B output: Inverted PWM
 // Noise Canceler: Off
 // Input Capture on Falling Edge
-// Timer Period: 0,046115 ms
+// Timer Period: 0.0511 ms
 // Output Pulse(s):
-// OC1A Period: 0,046115 ms Width: 0 us
-// OC1B Period: 0,046115 ms Width: 0,046115 ms
+// OC1A Period: 0.0511 ms Width: 0 us
+// OC1B Period: 0.0511 ms Width: 0.0511 ms
 // Timer1 Overflow Interrupt: Off
 // Input Capture Interrupt: Off
 // Compare A Match Interrupt: Off

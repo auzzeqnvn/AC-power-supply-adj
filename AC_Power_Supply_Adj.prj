@@ -31,7 +31,7 @@ F3=SCAN_LED.c
 F4=spi.c
 [CompilerDebug]
 Chip=ATmega88P
-CPUClock=20000000
+CPUClock=24000000
 MemoryModel=1
 OptimizeSize=0
 OptimizationLevel=1
@@ -127,13 +127,13 @@ WatchAVR8LAutoVariables=0
 UseEEPROMLocation0=1
 RebuildAll=0
 LinkageInformationPresent=1
-COFFileTimeStamp=1300541232
-Build=207
+COFFileTimeStamp=1300563084
+Build=225
 [DefinedSymbolsDebug]
 Count=0
 [Compiler]
 Chip=ATmega88P
-CPUClock=20000000
+CPUClock=24000000
 MemoryModel=1
 OptimizeSize=1
 OptimizationLevel=2
@@ -230,7 +230,7 @@ UseEEPROMLocation0=1
 RebuildAll=1
 LinkageInformationPresent=0
 COFFileTimeStamp=-1
-Build=207
+Build=225
 IncludePath0=
 IncludePath1=
 IncludePath2=
@@ -450,11 +450,11 @@ Files=2
 F1=main.c
 F2=scan_led.h
 [Bookmarks1]
-TimeStamp=1300535898
-Row=435
-Column=6
+TimeStamp=1300562384
+Row=250
+Column=5
 ScrollPosX=0
-ScrollPosY=419
+ScrollPosY=250
 BK0=-1
 BK1=-1
 BK2=-1
@@ -477,7 +477,7 @@ Row=0
 Column=0
 ScrollPosX=0
 ScrollPosY=0
-TimeStamp=1300541563
+TimeStamp=1300563118
 [HeadersList]
 Files=8
 F1=D:\My Data\TanPhat\AC-power-supply-adj\main.c
@@ -491,7 +491,7 @@ F8=D:\Mydata\Work\Tan Phat\Bien doi nguon 3 phase\Firmware_2\AC-power-supply-adj
 [BuildInfoCompiler]
 L1=Build configuration: Debug
 L2=Chip: ATmega88P
-L3=Clock frequency: 20,000000 MHz
+L3=Clock frequency: 24.000000 MHz
 L4=Program type: Application
 L5=Memory model: Small
 L6=Optimize for: Speed
@@ -505,8 +505,8 @@ L13=Enhanced function parameters passing: Yes
 L14=Automatic register allocation: Yes
 L15=Smart register allocation: Yes
 L16=
-L17=Build: 206
-L18=1568 line(s) compiled
+L17=Build: 224
+L18=1577 line(s) compiled
 L19=No errors
 L20=6 warning(s)
 L21=
@@ -525,48 +525,23 @@ L33=Hardware Stack size: 511 byte(s)
 L34=
 L35=Heap size: 0 byte(s)
 L36=
-L37=EEPROM usage: 0 byte(s), 0,0% of EEPROM
-L38=Program size: 1715 words (3430 bytes), 41,9% of FLASH
+L37=EEPROM usage: 0 byte(s), 0.0% of EEPROM
+L38=Program size: 1908 words (3816 bytes), 46.6% of FLASH
 Lines=38
 [BuildInfoAssembler]
 L1=AVRASM: AVR macro assembler 2.1.30 (build 592 Nov  7 2008 12:38:17)
 L2=Copyright (C) 1995-2008 ATMEL Corporation
 L3=
-L4=D:\Mydata\Work\Tan Phat\Bien doi nguon 3 phase\Firmware_2\AC-power-supply-adj\Debug\List\AC_Power_Supply_Adj.asm(3911): No EEPROM data, deleting D:\Mydata\Work\Tan Phat\Bien doi nguon 3 phase\Firmware_2\AC-power-supply-adj\Debug\Exe\AC_Power_Supply_Adj.eep
+L4=D:\My Data\TanPhat\AC-power-supply-adj\Debug\List\AC_Power_Supply_Adj.asm(4040): No EEPROM data, deleting D:\My Data\TanPhat\AC-power-supply-adj\Debug\Exe\AC_Power_Supply_Adj.eep
 L5=
 L6=ATmega88P memory use summary [bytes]:
 L7=Segment   Begin    End      Code   Data   Used    Size   Use%
 L8=---------------------------------------------------------------
-L9=[.cseg] 0x000000 0x000d66   3398     32   3430    8192  41.9%
+L9=[.cseg] 0x000000 0x000ee8   3784     32   3816    8192  46.6%
 L10=[.dseg] 0x000100 0x000301      0    257    257    1024  25.1%
 L11=[.eseg] 0x000000 0x000000      0      0      0     512   0.0%
 L12=
 Lines=12
-[Header1]
-Files=5
-F1=C:\cvavr\inc\mega88p.h
-F2=C:\cvavr\inc\mega328p_bits.h
-F3=ADE7753.h
-F4=scan_led.h
-F5=C:\cvavr\inc\delay.h
-[Header2]
-Files=5
-F1=ADE7753.h
-F2=C:\cvavr\inc\mega88p.h
-F3=C:\cvavr\inc\mega328p_bits.h
-F4=C:\cvavr\inc\delay.h
-F5=scan_led.h
-[Header3]
-Files=4
-F1=scan_led.h
-F2=SPI_SOFTWARE.h
-F3=C:\cvavr\inc\mega88p.h
-F4=C:\cvavr\inc\mega328p_bits.h
-[Header4]
-Files=3
-F1=SPI_SOFTWARE.h
-F2=C:\cvavr\inc\mega88p.h
-F3=C:\cvavr\inc\mega328p_bits.h
 [Bookmarks2]
 TimeStamp=1300533705
 Row=9
@@ -584,8 +559,6 @@ BK7=-1
 BK8=-1
 BK9=-1
 [FoldedCode2]
-Blocks=0
-[FoldedCode1]
 Blocks=0
 [Header6]
 Files=5
@@ -606,6 +579,33 @@ F1=SPI_SOFTWARE.h
 F2=C:\cvavr\inc\mega88p.h
 F3=C:\cvavr\inc\mega328p_bits.h
 [Header5]
+Files=5
+F1=C:\cvavr\inc\mega88p.h
+F2=C:\cvavr\inc\mega328p_bits.h
+F3=ADE7753.h
+F4=scan_led.h
+F5=C:\cvavr\inc\delay.h
+[FoldedCode1]
+Blocks=0
+[Header2]
+Files=5
+F1=ADE7753.h
+F2=C:\cvavr\inc\mega88p.h
+F3=C:\cvavr\inc\mega328p_bits.h
+F4=C:\cvavr\inc\delay.h
+F5=scan_led.h
+[Header3]
+Files=4
+F1=scan_led.h
+F2=SPI_SOFTWARE.h
+F3=C:\cvavr\inc\mega88p.h
+F4=C:\cvavr\inc\mega328p_bits.h
+[Header4]
+Files=3
+F1=SPI_SOFTWARE.h
+F2=C:\cvavr\inc\mega88p.h
+F3=C:\cvavr\inc\mega328p_bits.h
+[Header1]
 Files=5
 F1=C:\cvavr\inc\mega88p.h
 F2=C:\cvavr\inc\mega328p_bits.h
