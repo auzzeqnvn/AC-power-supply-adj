@@ -62,16 +62,20 @@ void    SCAN_LED(void)
     /* 7-seg 1*/
     data = Uint_data_led1/1000;
     byte1 = BCDLED[data];
+    if(Bit_Led1_Warning && Uint_Warning_Count > TIME_WARNING_DISPLAY/2)    byte1 = BCDLED[10];
     if(byte1 & bit_left) byte3 |= 0x20;
     data = Uint_data_led1/100%10;
     byte1 = BCDLED[data];
+    if(Bit_Led1_Warning && Uint_Warning_Count > TIME_WARNING_DISPLAY/2)    byte1 = BCDLED[10];
     if(byte1 & bit_left) byte3 |= 0x40;
     data = Uint_data_led1/10%10;
     byte1 = BCDLED[data];
     byte1 |= 0x01;
+    if(Bit_Led1_Warning && Uint_Warning_Count > TIME_WARNING_DISPLAY/2)    byte1 = BCDLED[10];
     if(byte1 & bit_left) byte3 |= 0x80;
     data = Uint_data_led1%10;
     byte1 = BCDLED[data];
+    if(Bit_Led1_Warning && Uint_Warning_Count > TIME_WARNING_DISPLAY/2)    byte1 = BCDLED[10];
     if(byte1 & bit_left) byte3 |= 0x10;
     /* 7-seg 2 */
     data = Uint_data_led2/1000;

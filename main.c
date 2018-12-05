@@ -32,22 +32,26 @@ Data Stack size         : 256
 #define ADC_SET_VOLTAGE    1
 #define ADC3    4
 
-#define ADC_SET_VOLTAGE_VALUE_MIN   100
-#define ADC_SET_VOLTAGE_VALUE_MAX   1000
-#define ADC_SET_VOLTAGE_RATIO   350
-
 #define BUZZER  PORTC.5
 
 #define BUZZER_ON   BUZZER = 1
 #define BUZZER_OFF  BUZZER = 0
 
-
-
 #define PHASE_1 PORTB.1
 #define PHASE_2 PORTB.2
 
-#define VOLTAGE_RATIO   5113//5670
+#define VOLTAGE_RATIO   6045//3831//4139
 #define CURRENT_RATIO   566
+
+// #define STEP_1  1.315789
+// #define STEP_2  1.298701
+// #define STEP_3  1.226994
+// #define STEP_4  1.190476 
+// #define STEP_5  1.123596
+// #define STEP_6  1   
+
+#define CALIB   0
+#define CALIB2   1
 
 #define NUM_SAMPLE  30
 #define NUM_FILTER  7
@@ -68,14 +72,12 @@ unsigned char   Uc_Buzzer_Count;
 
 bit Bit_En_Meas = 0;
 
-unsigned char   Uc_Voltage_Duty = 0;
+unsigned int   Uc_Voltage_Duty = 0;
 
 unsigned int   Uc_Timer_Update_Display=0;
 
-void    PWM_PHASE1(unsigned char duty);
-void    PWM_PHASE2(unsigned char duty);
-// // Voltage Reference: AREF pin
-// #define ADC_VREF_TYPE ((0<<REFS1) | (0<<REFS0) | (0<<ADLAR))
+void    PWM_PHASE1(unsigned int duty);
+void    PWM_PHASE2(unsigned int duty);
 
 // Voltage Reference: Int., cap. on AREF
 #define ADC_VREF_TYPE ((1<<REFS1) | (1<<REFS0) | (0<<ADLAR))
@@ -106,9 +108,8 @@ interrupt [TIM2_OVF] void timer2_ovf_isr(void)
     
 }
 
-void    PWM_PHASE1(unsigned char duty)
+void    PWM_PHASE1(unsigned int duty)
 {
-    // unsigned int   pwm = (unsigned int)(duty*255/100);
     if(duty <= 1)
     {
         OCR1AH=0x00;
@@ -117,13 +118,12 @@ void    PWM_PHASE1(unsigned char duty)
     else
     {
         OCR1AH=(duty>>8) & 0xff;
-        OCR1AL=duty & 0xff;
+        OCR1AL= duty & 0xff;
     }
 }
 
-void    PWM_PHASE2(unsigned char duty)
+void    PWM_PHASE2(unsigned int duty)
 {
-    //unsigned int   pwm = (unsigned int)(duty*255/100);
     if(duty <= 1)
     {
         OCR1BH=0x00;
@@ -141,12 +141,11 @@ void    CONTROL_VOLTAGE(void)
     unsigned int    Uint_Vr_Set_Voltage;
 
     Uint_Vr_Set_Voltage = read_adc(ADC_SET_VOLTAGE);
-    Uc_Voltage_Duty = (unsigned long)Uint_Vr_Set_Voltage*255/1023;
-    // Uint_data_led1 = Uint_Vr_Set_Voltage;
-    // Uint_data_led2 = Uc_Voltage_Duty;
-    // Uint_data_led2 = Uc_Voltage_Duty;
+    Uc_Voltage_Duty = (unsigned int)((unsigned long)Uint_Vr_Set_Voltage*255/1023);
     PWM_PHASE2(Uc_Voltage_Duty);
     PWM_PHASE1(Uc_Voltage_Duty);
+    // Uint_data_led1 = Uc_Voltage_Duty;
+    // Uint_data_led2 = Uint_Vr_Set_Voltage;
 }
 /* 
 Doc thong so dien ap va dong dien, loc nhieu.
@@ -184,30 +183,33 @@ void    READ_CURRENT_INFO(void)
         Ul_temp += Ul_Buff[Uc_loop];
     }
     Ul_temp = Ul_temp/(NUM_SAMPLE - 2*NUM_FILTER);
-    // Ul_temp = Ul_temp / 100;
-    // Uint_Voltage = (unsigned int)((float)(Ul_temp*(0.015233297 + Ul_temp*(0.0000003453386290397 - Ul_temp*0.0000000000109929))));
+
+    #if CALIB
     if(Uc_Timer_Update_Display >= TIME_UPDATE_DISPLAY)   
     {
-        // Uint_data_led1 = Ul_temp /10000;
-        // Uint_data_led2 = Ul_temp %10000;
+        Uint_data_led1 = Ul_temp /10000;
+        Uint_data_led2 = Ul_temp %10000;
     }
+    #endif
     Uint_Voltage = (unsigned int)((float)Ul_temp/VOLTAGE_RATIO);
-    // if(Uc_Timer_Update_Display >= TIME_UPDATE_DISPLAY)    Uint_data_led2 = Uint_Voltage;
-    if(Uint_Voltage < 40)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.930233));
-    else if(Uint_Voltage < 80)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.92488));
-    else if(Uint_Voltage < 120)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.92131));
-    else if(Uint_Voltage < 160)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.926655));
-    else if(Uint_Voltage < 200)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.9281));
-    else if(Uint_Voltage < 240)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.926283));
-    else if(Uint_Voltage < 280)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.929987));
-    else if(Uint_Voltage < 320)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.937255));
-    else if(Uint_Voltage < 360)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.944272));
-    else if(Uint_Voltage < 400)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.951011));
-    else if(Uint_Voltage < 440)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.955588));
-    else if(Uint_Voltage < 480)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.963109));
-    else if(Uint_Voltage < 520)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO/0.981032));
 
+    // #if !CALIB2
+    // if(Uint_Voltage < 50)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO*STEP_1));
+    // else if(Uint_Voltage < 100)     Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO*(STEP_1 - (Uint_Voltage - 50)*(STEP_1-STEP_2)/50)));
+    // else if(Uint_Voltage < 200)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO*(STEP_2 - (Uint_Voltage - 100)*(STEP_2-STEP_3)/100)));
+    // else if(Uint_Voltage < 300)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO*(STEP_3 - (Uint_Voltage - 200)*(STEP_3-STEP_4)/100)));
+    // else if(Uint_Voltage < 400)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO*(STEP_4 - (Uint_Voltage - 300)*(STEP_4-STEP_5)/100)));
+    // else if(Uint_Voltage < 500)   Uint_Voltage = (unsigned int)((float)Ul_temp/(VOLTAGE_RATIO*(STEP_5 - (Uint_Voltage - 400)*(STEP_5-STEP_6)/100)));
+    // #endif
+
+    #if !CALIB
     if(Uc_Timer_Update_Display >= TIME_UPDATE_DISPLAY)    Uint_data_led1 = Uint_Voltage;
+    #endif
+    if(Uint_Voltage > 380)
+    {
+        Bit_Led1_Warning = 1;
+    }
+    else    Bit_Led1_Warning = 0;
 
     Ul_Current_Buff[Uc_Buff_Count] = ADE7753_READ(1,IRMS);
     delay_ms(10);
@@ -237,7 +239,9 @@ void    READ_CURRENT_INFO(void)
     Uint_Current = (unsigned int)((float)Ul_temp/CURRENT_RATIO);
     if(Uc_Timer_Update_Display >= TIME_UPDATE_DISPLAY)   
     {
+        #if !CALIB
         Uint_data_led2 = Uint_Current;
+        #endif
         Uc_Timer_Update_Display = 0;
     }
     if(Uint_Current > 550)  Bit_Led2_Warning = 1;
@@ -291,33 +295,6 @@ TCCR0B=(0<<WGM02) | (0<<CS02) | (0<<CS01) | (0<<CS00);
 TCNT0=0x00;
 OCR0A=0x00;
 OCR0B=0x00;
-
-// Timer/Counter 1 initialization
-// Clock source: System Clock
-// Clock value: 11059,200 kHz
-// Mode: Ph. correct PWM top=0x00FF
-// OC1A output: Non-Inverted PWM
-// OC1B output: Non-Inverted PWM
-// Noise Canceler: Off
-// Input Capture on Falling Edge
-// Timer Period: 0,046115 ms
-// Output Pulse(s):
-// OC1A Period: 0,046115 ms Width: 0 us
-// OC1B Period: 0,046115 ms Width: 0 us
-// Timer1 Overflow Interrupt: Off
-// Input Capture Interrupt: Off
-// Compare A Match Interrupt: Off
-// Compare B Match Interrupt: Off
-// TCCR1A=(1<<COM1A1) | (0<<COM1A0) | (1<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (1<<WGM10);
-// TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (0<<WGM12) | (0<<CS12) | (0<<CS11) | (1<<CS10);
-// TCNT1H=0x00;
-// TCNT1L=0x00;
-// ICR1H=0x00;
-// ICR1L=0x00;
-// OCR1AH=0x00;
-// OCR1AL=0x00;
-// OCR1BH=0x00;
-// OCR1BL=0x00;
 
 // Timer/Counter 1 initialization
 // Clock source: System Clock
@@ -394,16 +371,6 @@ ACSR=(1<<ACD) | (0<<ACBG) | (0<<ACO) | (0<<ACI) | (0<<ACIE) | (0<<ACIC) | (0<<AC
 // Digital input buffer on AIN1: On
 DIDR1=(0<<AIN0D) | (0<<AIN1D);
 
-// // ADC initialization
-// // ADC Clock frequency: 691.200 kHz
-// // ADC Voltage Reference: AREF pin
-// // ADC Auto Trigger Source: ADC Stopped
-// // Digital input buffers on ADC0: On, ADC1: On, ADC2: On, ADC3: On
-// // ADC4: On, ADC5: On
-// DIDR0=(0<<ADC5D) | (0<<ADC4D) | (0<<ADC3D) | (0<<ADC2D) | (0<<ADC1D) | (0<<ADC0D);
-// ADMUX=ADC_VREF_TYPE;
-// ADCSRA=(1<<ADEN) | (0<<ADSC) | (0<<ADATE) | (0<<ADIF) | (0<<ADIE) | (1<<ADPS2) | (0<<ADPS1) | (0<<ADPS0);
-// ADCSRB=(0<<ADTS2) | (0<<ADTS1) | (0<<ADTS0);
 // ADC initialization
 // ADC Clock frequency: 691,200 kHz
 // ADC Voltage Reference: Int., cap. on AREF
@@ -426,14 +393,16 @@ TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 // Global enable interrupts
 #asm("sei")
 
-// ADE7753_INIT();
+ADE7753_INIT();
+PWM_PHASE2(255);
+PWM_PHASE1(255);
 for(Uc_Buff_Count = 0; Uc_Buff_Count < NUM_SAMPLE; Uc_Buff_Count++)
 {
     Ul_Voltage_Buff[Uc_Buff_Count] = 0;
     Ul_Current_Buff[Uc_Buff_Count] = 0;
 }
 Uc_Buff_Count = 0;
-delay_ms(3000);
+delay_ms(2000);
 BUZZER_ON;
 delay_ms(100);
 BUZZER_OFF;
@@ -450,7 +419,7 @@ while (1)
                 READ_CURRENT_INFO();
         }
         CONTROL_VOLTAGE();
-        if(Bit_Led2_Warning == 1)
+        if(Bit_Led2_Warning == 1 || Bit_Led1_Warning)
         {
             if(Uc_Buzzer_Count < SPEED_BUZZER/2)   BUZZER_ON;
             else    BUZZER_OFF;

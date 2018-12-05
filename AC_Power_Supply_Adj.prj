@@ -127,8 +127,8 @@ WatchAVR8LAutoVariables=0
 UseEEPROMLocation0=1
 RebuildAll=0
 LinkageInformationPresent=1
-COFFileTimeStamp=1300563084
-Build=225
+COFFileTimeStamp=1300594729
+Build=282
 [DefinedSymbolsDebug]
 Count=0
 [Compiler]
@@ -230,7 +230,7 @@ UseEEPROMLocation0=1
 RebuildAll=1
 LinkageInformationPresent=0
 COFFileTimeStamp=-1
-Build=225
+Build=282
 IncludePath0=
 IncludePath1=
 IncludePath2=
@@ -450,11 +450,11 @@ Files=2
 F1=main.c
 F2=scan_led.h
 [Bookmarks1]
-TimeStamp=1300562384
-Row=250
-Column=5
+TimeStamp=1300579109
+Row=0
+Column=0
 ScrollPosX=0
-ScrollPosY=250
+ScrollPosY=186
 BK0=-1
 BK1=-1
 BK2=-1
@@ -477,7 +477,7 @@ Row=0
 Column=0
 ScrollPosX=0
 ScrollPosY=0
-TimeStamp=1300563118
+TimeStamp=1300601122
 [HeadersList]
 Files=8
 F1=D:\My Data\TanPhat\AC-power-supply-adj\main.c
@@ -491,7 +491,7 @@ F8=D:\Mydata\Work\Tan Phat\Bien doi nguon 3 phase\Firmware_2\AC-power-supply-adj
 [BuildInfoCompiler]
 L1=Build configuration: Debug
 L2=Chip: ATmega88P
-L3=Clock frequency: 24.000000 MHz
+L3=Clock frequency: 24,000000 MHz
 L4=Program type: Application
 L5=Memory model: Small
 L6=Optimize for: Speed
@@ -505,40 +505,40 @@ L13=Enhanced function parameters passing: Yes
 L14=Automatic register allocation: Yes
 L15=Smart register allocation: Yes
 L16=
-L17=Build: 224
-L18=1577 line(s) compiled
+L17=Build: 282
+L18=0 line(s) compiled
 L19=No errors
-L20=6 warning(s)
+L20=No warnings
 L21=
-L22=Bit variables area: 0x2 to 0x2
-L23=Bit variables size: 1 byte(s)
-L24=
-L25=Data Stack area: 0x100 to 0x1FF
-L26=Data Stack size: 256 byte(s)
-L27=Estimated Data Stack usage: 171 byte(s)
-L28=
-L29=RAM Global variables area: 0x200 to 0x300
-L30=RAM Global variables size: 257 byte(s)
-L31=
-L32=Hardware Stack area: 0x301 to 0x4FF
-L33=Hardware Stack size: 511 byte(s)
-L34=
-L35=Heap size: 0 byte(s)
-L36=
-L37=EEPROM usage: 0 byte(s), 0.0% of EEPROM
-L38=Program size: 1908 words (3816 bytes), 46.6% of FLASH
-Lines=38
+L22=Bit variables size: 0 byte(s)
+L23=
+L24=Data Stack area: 0x100 to 0x1FF
+L25=Data Stack size: 256 byte(s)
+L26=Estimated Data Stack usage: 171 byte(s)
+L27=
+L28=RAM Global variables area: 0x200 to 0x301
+L29=RAM Global variables size: 258 byte(s)
+L30=
+L31=Hardware Stack area: 0x302 to 0x4FF
+L32=Hardware Stack size: 510 byte(s)
+L33=
+L34=Heap size: 0 byte(s)
+L35=
+L36=EEPROM usage: 0 byte(s), 0,0% of EEPROM
+L37=Program size: 1852 words (3704 bytes), 45,2% of FLASH
+L38=Program size: 1852 words (3704 bytes), 45,2% of FLASH
+Lines=37
 [BuildInfoAssembler]
 L1=AVRASM: AVR macro assembler 2.1.30 (build 592 Nov  7 2008 12:38:17)
 L2=Copyright (C) 1995-2008 ATMEL Corporation
 L3=
-L4=D:\My Data\TanPhat\AC-power-supply-adj\Debug\List\AC_Power_Supply_Adj.asm(4040): No EEPROM data, deleting D:\My Data\TanPhat\AC-power-supply-adj\Debug\Exe\AC_Power_Supply_Adj.eep
+L4=D:\Mydata\Work\Tan Phat\Bien doi nguon 3 phase\Firmware_2\AC-power-supply-adj\Debug\List\AC_Power_Supply_Adj.asm(4020): No EEPROM data, deleting D:\Mydata\Work\Tan Phat\Bien doi nguon 3 phase\Firmware_2\AC-power-supply-adj\Debug\Exe\AC_Power_Supply_Adj.eep
 L5=
 L6=ATmega88P memory use summary [bytes]:
 L7=Segment   Begin    End      Code   Data   Used    Size   Use%
 L8=---------------------------------------------------------------
-L9=[.cseg] 0x000000 0x000ee8   3784     32   3816    8192  46.6%
-L10=[.dseg] 0x000100 0x000301      0    257    257    1024  25.1%
+L9=[.cseg] 0x000000 0x000e78   3664     40   3704    8192  45.2%
+L10=[.dseg] 0x000100 0x000302      0    258    258    1024  25.2%
 L11=[.eseg] 0x000000 0x000000      0      0      0     512   0.0%
 L12=
 Lines=12
@@ -559,33 +559,6 @@ BK7=-1
 BK8=-1
 BK9=-1
 [FoldedCode2]
-Blocks=0
-[Header6]
-Files=5
-F1=ADE7753.h
-F2=C:\cvavr\inc\mega88p.h
-F3=C:\cvavr\inc\mega328p_bits.h
-F4=C:\cvavr\inc\delay.h
-F5=scan_led.h
-[Header7]
-Files=4
-F1=scan_led.h
-F2=SPI_SOFTWARE.h
-F3=C:\cvavr\inc\mega88p.h
-F4=C:\cvavr\inc\mega328p_bits.h
-[Header8]
-Files=3
-F1=SPI_SOFTWARE.h
-F2=C:\cvavr\inc\mega88p.h
-F3=C:\cvavr\inc\mega328p_bits.h
-[Header5]
-Files=5
-F1=C:\cvavr\inc\mega88p.h
-F2=C:\cvavr\inc\mega328p_bits.h
-F3=ADE7753.h
-F4=scan_led.h
-F5=C:\cvavr\inc\delay.h
-[FoldedCode1]
 Blocks=0
 [Header2]
 Files=5
@@ -612,3 +585,30 @@ F2=C:\cvavr\inc\mega328p_bits.h
 F3=ADE7753.h
 F4=scan_led.h
 F5=C:\cvavr\inc\delay.h
+[FoldedCode1]
+Blocks=0
+[Header6]
+Files=5
+F1=ADE7753.h
+F2=C:\cvavr\inc\mega88p.h
+F3=C:\cvavr\inc\mega328p_bits.h
+F4=C:\cvavr\inc\delay.h
+F5=scan_led.h
+[Header8]
+Files=3
+F1=SPI_SOFTWARE.h
+F2=C:\cvavr\inc\mega88p.h
+F3=C:\cvavr\inc\mega328p_bits.h
+[Header5]
+Files=5
+F1=C:\cvavr\inc\mega88p.h
+F2=C:\cvavr\inc\mega328p_bits.h
+F3=ADE7753.h
+F4=scan_led.h
+F5=C:\cvavr\inc\delay.h
+[Header7]
+Files=4
+F1=scan_led.h
+F2=SPI_SOFTWARE.h
+F3=C:\cvavr\inc\mega88p.h
+F4=C:\cvavr\inc\mega328p_bits.h

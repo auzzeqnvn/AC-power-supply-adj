@@ -5,8 +5,9 @@ Uint_data_led1                                                                  
 Uint_data_led2                                                                    0x0202       2
 Ul_Voltage_Buff                                                                   0x0204     120
 Ul_Current_Buff                                                                   0x027C     120
-Uint_Warning_Count                                                                0x02F4       2
-BCDLED                                                                            0x02F6      11
+Uc_Select_led                                                                     0x02F4       1
+Uint_Warning_Count                                                                0x02F5       2
+BCDLED                                                                            0x02F7      11
 
 EEPROM Allocation [bytes]
 Variable                                                                          Address   Size
@@ -20,25 +21,45 @@ Uint_Current                                                                    
 Uc_Buff_Count                                                                     R10          1
 Uc_Buzzer_Count                                                                   R9           1
 Bit_En_Meas                                                                       GPIOR0.2  1bit
-Uc_Voltage_Duty                                                                   R12          1
+Uc_Voltage_Duty                                                                   R11,R12      2
 Uc_Timer_Update_Display                                                           R13,R14      2
 Bit_Led1_Warning                                                                  GPIOR0.0  1bit
 Bit_Led2_Warning                                                                  GPIOR0.1  1bit
-Uc_Select_led                                                                     R11          1
 
 FLASH Allocation [words]
 Function                                                                          Address   Size
 ------------------------------------------------------------------------------------------------
-read_adc                                                                          0x00058     27
-timer2_ovf_isr                                                                    0x00073     46
-PWM_PHASE1                                                                        0x000A1     17
-PWM_PHASE2                                                                        0x000B2     18
-CONTROL_VOLTAGE                                                                   0x000C4     25
-READ_CURRENT_INFO                                                                 0x000DD    616
-main                                                                              0x00345    160
-SPI_7753_SEND                                                                     0x003E5     28
-SPI_7753_RECEIVE                                                                  0x00401     24
-ADE7753_READ                                                                      0x00419    125
-SEND_DATA_LED                                                                     0x00496     56
-SCAN_LED                                                                          0x004CE    247
-SPI_SENDBYTE                                                                      0x005C5     27
+read_adc                                                                          0x0005C     28
+timer2_ovf_isr                                                                    0x00078     46
+PWM_PHASE1                                                                        0x000A6     17
+PWM_PHASE2                                                                        0x000B7     18
+CONTROL_VOLTAGE                                                                   0x000C9     28
+READ_CURRENT_INFO                                                                 0x000E5    400
+main                                                                              0x00275    169
+SPI_7753_SEND                                                                     0x0031E     28
+SPI_7753_RECEIVE                                                                  0x0033A     24
+ADE7753_WRITE                                                                     0x00352     73
+ADE7753_READ                                                                      0x0039B    125
+ADE7753_INIT                                                                      0x00418     21
+SEND_DATA_LED                                                                     0x0042D     56
+SCAN_LED                                                                          0x00465    304
+SPI_SENDBYTE                                                                      0x00595     27
+
+FLASH Allocation [words]
+Function                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+read_adc                                                                          0x0005C     28
+timer2_ovf_isr                                                                    0x00078     46
+PWM_PHASE1                                                                        0x000A6     17
+PWM_PHASE2                                                                        0x000B7     18
+CONTROL_VOLTAGE                                                                   0x000C9     28
+READ_CURRENT_INFO                                                                 0x000E5    400
+main                                                                              0x00275    169
+SPI_7753_SEND                                                                     0x0031E     28
+SPI_7753_RECEIVE                                                                  0x0033A     24
+ADE7753_WRITE                                                                     0x00352     73
+ADE7753_READ                                                                      0x0039B    125
+ADE7753_INIT                                                                      0x00418     21
+SEND_DATA_LED                                                                     0x0042D     56
+SCAN_LED                                                                          0x00465    304
+SPI_SENDBYTE                                                                      0x00595     27
